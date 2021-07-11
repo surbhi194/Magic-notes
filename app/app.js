@@ -1,46 +1,61 @@
 console.log("app");
+let data=[]
 showNotes();
 let addbtn = document.getElementById("addbtn");
 addbtn.addEventListener('click', function (e) {
-    let addtxt = document.getElementById("addtxt");
-    let notes = localStorage.getItem("notes");
-    if (notes == null) {
-        notesObj = [];
+    
+    note = {
+    addtxt : document.getElementById("addtxt").value,
+    addtitle:document.getElementById("addnote").value,
     }
-    else {
-        notesObj = JSON.parse(notes);
+    console.log(note);
+    
+    if(note.addtxt==''||note.addtitle=='')
+    {
+        alert.innertext='Both fields are required';
     }
-    notesObj.push(addtxt.value);
-    localStorage.setItem("notes", JSON.stringify(notesObj));
-    addtxt.value = '';
-    showNotes();
+    else{
+        console.log(note.addtitle);
+        appendNotes(note.addtitle,note.addtxt);
+    }
+    // data.push(addtitle.value,addtxt.value);
+    // localStorage.setItem("notes", JSON.stringify(data));
+    // addtxt.value = '';
+    // addtitle.value = '';
+    // showNotes();
 })
 function showNotes() {
     let notes = localStorage.getItem("notes");
     if (notes == null) {
-        notesObj = [];
+        data = [];
     }
     else {
-        notesObj = JSON.parse(notes);
+        data = JSON.parse(notes);
     }
     let html = '';
-    notesObj.forEach(function (element, index) {
+    data.forEach(function (element, index, array) {
         html += `
            <div class=" noteCard my-2 mx-2 card" style="width: 18rem;">
                 <div class="card-body">
-                    <h5 class='card title'>Note ${index + 1}</h5>
-                  <p class="card-text">${element}</p>
+              <u><b class="card-text">${element.addtitle}</b></u> <br><br>
+                  <p class="card-text">${element.addtxt}</p>
                   <button id='${index}' onclick="deleteNote(this.id)" class="btn btn-primary my-2">Delete note</button>
-                </div>
+                  </div>
               </div>`;
     });
     let notesElm = document.getElementById("notes");
-    if (notesObj.length != 0) {
+    if (data.length != 0) {
         notesElm.innerHTML = html;
     }
     else {
         notesElm.innerHTML = `Nothing to show! Use "Add a Note" section above to add notes`;
     }
+}
+function appendNotes(addtitle,addtxt){
+    console.log(data);
+    data.push({addtitle,addtxt});
+localStorage.setItem("notes", JSON.stringify(data));
+showNotes();
 }
 function deleteNote(index) {
     let notes = localStorage.getItem("notes");
@@ -48,23 +63,9 @@ function deleteNote(index) {
         notesObj = [];
     }
     else {
-        notesObj = JSON.parse(notes);
+        data = JSON.parse(notes);
     }
-    notesObj.splice(index, 1);
-    localStorage.setItem("notes", JSON.stringify(notesObj));
+data.splice(index, 1);
+    localStorage.setItem("notes", JSON.stringify(data));
     showNotes();
 }
-search = document.getElementById("searchtxt");
-search.addEventListener('input', function (e) {
-    let inputVal = search.value.toLowerCase();
-    let notesCard = document.getElementById("noteCard");
-    Array.from(notesCard).forEach(function (element) {
-        let cardTxt = element.getElementByTagName("p")[0].innerText;
-        if (cardTxt.includes(inputVal)) {
-            element.style.display = 'block';
-        }
-        else {
-            element.style.display = 'none';
-        }
-    })
-})
